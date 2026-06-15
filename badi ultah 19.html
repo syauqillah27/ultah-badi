@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Day for You</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&family=Montserrat:wght@200;400;600&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #0b0c10;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* Musik & Gatekeeper */
+        #gatekeeper {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #0b0c10;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: 1s;
+        }
+
+        .gate-btn {
+            background: none;
+            border: 1px solid #d4af37;
+            color: #d4af37;
+            padding: 15px 45px;
+            cursor: pointer;
+            letter-spacing: 3px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .gate-btn:hover {
+            background: #d4af37;
+            color: #0b0c10;
+            box-shadow: 0 0 20px rgba(212,175,55,0.5);
+        }
+
+        /* Container Scroll Utama */
+        .main-wrapper {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        /* Struktur Slide */
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            scroll-snap-align: start;
+            padding: 60px 40px;
+        }
+
+        /* Background Layer Slide 1 */
+        .bg-photo-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('foto utama.jpeg'); 
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+        }
+
+        .bg-overlay-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(11, 12, 16, 0.65), rgba(11, 12, 16, 0.9));
+            backdrop-filter: blur(4px);
+            z-index: 1;
+        }
+
+        /* Pembungkus Konten Slide */
+        .slide-header { z-index: 2; margin-bottom: 10px; text-align: center; }
+        .slide-body { z-index: 2; width: 100%; display: flex; justify-content: center; align-items: center; }
+        .slide-footer { z-index: 2; margin-top: 10px; text-align: center; }
+
+        /* Font Styling */
+        .fancy-title {
+            font-family: 'Alex Brush', cursive;
+            font-size: 4.5rem;
+            color: #d4af37;
+            letter-spacing: 0px; 
+            line-height: 1.2;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .hint-top {
+            font-size: 0.8rem;
+            letter-spacing: 5px;
+            font-weight: 600;
+            color: #d4af37;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .caption-text {
+            max-width: 750px;
+            font-size: 1rem;
+            font-weight: 300;
+            line-height: 1.8;
+            color: #e0e0e0;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* Grid Polaroid Besar */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            width: 100%;
+            max-width: 1100px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: 1.5s all ease;
+        }
+
+        .slide.active .photo-grid {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .polaroid {
+            background: white;
+            padding: 15px 15px 45px 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            transition: 0.5s;
+        }
+        .polaroid:hover {
+            transform: scale(1.03) rotate(0deg) !important;
+            z-index: 10;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: 350px; 
+            object-fit: cover;
+        }
+
+        .p-1 { transform: rotate(-2deg); }
+        .p-2 { transform: rotate(2deg); }
+        .p-3 { transform: rotate(-1deg); }
+
+        /* ==================== DISINI MODEL KERTAS ROSE GOLD GLOW SUDAH AKTIF ==================== */
+        .letter-box {
+            background: rgba(15, 15, 25, 0.75); /* Warna hitam transparan mewah */
+            backdrop-filter: blur(12px); /* Efek blur kaca di belakangnya */
+            border: 1px solid rgba(255, 182, 193, 0.35); /* Garis pink lembut tipis */
+            padding: 40px;
+            border-radius: 15px; /* Sudut melengkung halus */
+            max-width: 850px;
+            text-align: left;
+            margin: 25px auto 0 auto;
+            z-index: 2;
+            position: relative;
+            /* Efek cahaya neon rose gold di pinggiran kotak */
+            box-shadow: 0 0 35px rgba(255, 182, 193, 0.25), inset 0 0 15px rgba(255, 182, 193, 0.1);
+        }
+        .letter-box p {
+            font-size: 0.98rem;
+            line-height: 1.9;
+            color: #f3f3f6; /* Teks warna putih agar mudah dibaca */
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        #starfield {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="starfield"></canvas>
+    <audio id="bgMusic" src="I Love You 3K.mp3" loop></audio>
+
+    <div id="gatekeeper">
+        <h1 class="fancy-title" style="font-size: 3.5rem; margin-bottom: 20px;">Dear My Favorite Person</h1>
+        <button class="gate-btn" onclick="start()">Open</button>
+    </div>
+
+    <div class="main-wrapper" id="mainContainer">
+        
+        <section class="slide active">
+            <div class="bg-photo-layer"></div>
+            <div class="bg-overlay-layer"></div>
+            
+            <div class="slide-header" style="margin-auto: auto; margin-top: 15vh;">
+                <p class="hint-top">HAPPY BIRTHDAY, love</p>
+                <h1 class="fancy-title">Badi Auliatus Tsaniyah</h1>
+            </div>
+            
+            <div class="slide-footer" style="margin-bottom: 15vh;">
+                <p class="caption-text">"ENJOY, HOPE YOU HAVE A GOOD TIME"</p>
+            </div>
+        </section>
+
+        <section class="slide">
+            <div class="slide-header">
+                <h2 class="fancy-title" style="font-size: 2.8rem;">The Way You Smile</h2>
+            </div>
+            
+            <div class="slide-body">
+                <div class="photo-grid">
+                    <div class="polaroid p-1"><img src="fotobadi1.jpeg" alt="1"></div>
+                    <div class="polaroid p-2"><img src="fotobadi2.jpeg" alt="2"></div>
+                    <div class="polaroid p-3"><img src="fotobadi3.jpeg" alt="3"></div>
+                </div>
+            </div>
+            
+            <div class="slide-footer">
+                <p class="caption-text">Setiap senyumanmu adalah alasan utama kenapa hari-hari yang melelahkan pun bisa berubah jadi penuh kehangatan.</p>
+            </div>
+        </section>
+
+        <section class="slide">
+            <div class="slide-header">
+                <h2 class="fancy-title" style="font-size: 2.8rem;">Our Beautiful Journey</h2>
+            </div>
+            
+            <div class="slide-body">
+                <div class="photo-grid">
+                    <div class="polaroid p-2"><img src="fotobadi4.jpeg" alt="4"></div>
+                    <div class="polaroid p-1"><img src="fotobadi5.jpeg" alt="5"></div>
+                    <div class="polaroid p-3"><img src="fotobadi6.jpeg" alt="6"></div>
+                </div>
+            </div>
+            
+            <div class="slide-footer">
+                <p class="caption-text">Terima kasih sudah berjalan beriringan bersamaku, melewati tawa dan banyak cerita yang tak akan pernah aku lupakan.</p>
+            </div>
+        </section>
+
+        <section class="slide" style="height: auto; min-height: 100vh; padding: 60px 20px; justify-content: flex-start;">
+            <div class="slide-header">
+                <h2 class="fancy-title" style="font-size: 2.8rem;">A Letter For You</h2>
+            </div>
+            
+            <div class="slide-body" style="margin-top: 20px; margin-bottom: 20px;">
+                <div class="photo-grid">
+                    <div class="polaroid p-3"><img src="fotobadi7.jpeg" alt="7"></div>
+                    <div class="polaroid p-2"><img src="fotobadi8.jpeg" alt="8"></div>
+                    <div class="polaroid p-1"><img src="fotobadi9.jpeg" alt="9"></div>
+                </div>
+            </div>
+            
+            <div class="letter-box">
+                <p>Selamat Hari Lahir, Barakallah Fii Umrik 'Badi Auliatus Tsaniya' yang ke 19, extraordinary for a great woman who I love very much. Hari ini adalah salah satu hari bahagia kamu dan aku juga bagaia karenamu, pada tanggal inilah dunia menyambut kehadiran seseorang yang nantinya akan menjadi bagian paling berharga dalam hidupku.</p>
+                <p>Aku selalu bersyukur atas kehadiranmu. Bersamamu, aku belajar banyak hal tentang kenyamanan, kesabaran, dan bagaimana rasanya dicintai dengan tulus. Terima kasih ya, sayang, sudah bertahan sejauh ini, sudah selalu menjadi tempatku berteduh, dan sudah selalu membagikan binar matamu yang indah itu untukku.</p>
+                <p>Di usiamu yang baru ini, doa terbaikku selalu menyertaimu. Semoga kamu selalu diberikan kesehatan, kelancaran di setiap impian yang sedang kamu kejar, dan kebahagiaan yang tidak pernah putus. Tetaplah menjadi dirimu yang luar biasa, dan jangan pernah merasa sendirian, karena aku akan selalu ada di sini untuk mendukungmu, menggandeng tanganmu, dan berjalan bersamamu di setiap babak kehidupan selanjutnya.</p>
+                <p>I LOVE U, my doctor, unyil 
+				<p style="text-align: right; color: #d4af37; font-family: 'Alex Brush', cursive; font-size: 2.2rem; margin-top: 20px; letter-spacing: 0px;">With all my love, always.</p>
+            </div>
+        </section>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script>
+        function start() {
+            document.getElementById('gatekeeper').style.opacity = '0';
+            document.getElementById('bgMusic').play();
+            
+            var duration = 3 * 1000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#d4af37', '#ffffff', '#aa771c']
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#d4af37', '#ffffff', '#aa771c']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+
+            setTimeout(() => {
+                document.getElementById('gatekeeper').style.display = 'none';
+            }, 1000);
+        }
+
+        // Script Slide Active Detection
+        const container = document.getElementById('mainContainer');
+        const slides = document.querySelectorAll('.slide');
+
+        container.addEventListener('scroll', () => {
+            slides.forEach(slide => {
+                const rect = slide.getBoundingClientRect();
+                if (rect.top >= -window.innerHeight/2 && rect.top <= window.innerHeight / 2) {
+                    slides.forEach(s => s.classList.remove('active'));
+                    slide.classList.add('active');
+                }
+            });
+        });
+
+        // Background Star Animation
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.onresize = resize; resize();
+        for(let i=0; i<80; i++) stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*1.5, a:Math.random(), s:Math.random()*0.02});
+        function anim() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            stars.forEach(st => {
+                st.a += st.s; if(st.a>1 || st.a<0) st.s = -st.s;
+                ctx.globalAlpha = Math.abs(st.a); ctx.fillStyle="white";
+                ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, Math.PI*2); ctx.fill();
+            });
+            requestAnimationFrame(anim);
+        }
+        anim();
+    </script>
+</body>
+</html>
